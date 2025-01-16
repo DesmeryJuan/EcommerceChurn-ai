@@ -1,0 +1,27 @@
+base=read.csv("ecommercechurn.csv")
+str(base)
+nuevabase <- base[sample(nrow(base), 6000), ]
+base=nuevabase
+str(base)
+base$Customer.ID=NULL
+base$Purchase.Date=NULL
+base$Customer.Name=NULL
+str(base)
+base$Product.Category=as.factor(base$Product.Category)
+base$Payment.Method=as.factor(base$Payment.Method)
+base$Gender=as.factor(base$Gender)
+str(base)
+library(caret)
+set.seed(123);particion=createDataPartition(base$Churn,p=0.8,list=F)
+entreno=base[particion,]
+testeo=base[-particion,]
+library(rpart)
+arbol=rpart(Churn~.,entreno,method="class")
+library(rpart.plot)
+rpart.plot(arbol,extra=1,type=5)
+arbolGrande=rpart(Churn~.,entreno,method="class",minsplit=0,cp=0)
+rpart.plot(arbolGrande,type=5,extra=1)
+x11();plotcp(arbolGrande)
+podado3=prune(arbolGrande,cp=0.0013)
+rpart.plot(podado3,type=5,extra=1)
+rpart.plot(podado3,type=5,extra=1,cex=0.40)
